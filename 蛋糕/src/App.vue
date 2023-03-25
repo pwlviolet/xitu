@@ -15,9 +15,9 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { reactive, onMounted, ref, watch } from "vue";
 import * as dat from "dat.gui";
 // // 顶点着色器
-import basicVertexShader from "./shader/raw/vert2.glsl?raw";
+import basicVertexShader from "./shader/raw/vertexpoint.glsl?raw";
 // // 片元着色器
-import basicFragmentShader from "./shader/raw/frag3.glsl?raw";
+import basicFragmentShader from "./shader/raw/fragmentpoint.glsl?raw";
 import CameraControls from "camera-controls";
 CameraControls.install({ THREE: THREE });
 //全局
@@ -33,7 +33,7 @@ let scene,
   width,
   height,
   raycaster,
-  fbxloader,
+  glbloader,
   cube,
   light;
 scene = new THREE.Scene();
@@ -57,14 +57,12 @@ const rawShaderMaterial = new THREE.RawShaderMaterial(
     //   wireframe: true,
     side: THREE.DoubleSide,
     uniforms: {
-      uTime: {
+      uSpeed: {
         value: 10,
       },
-      uTexture: {
-        value: texture,
+      uTime: {
+        value: 10.0,
       },
-      iTime: { value: 0 },
-      iResolution: { value: new THREE.Vector3(100, 100, 1) },
     },
   }
 )
@@ -75,61 +73,43 @@ const floor = new THREE.Mesh(
 );
 rawShaderMaterial.transparent = true;
 rawShaderMaterial.opacity = 0.1
-console.log(floor);
+console.log(rawShaderMaterial);
 // scene.add(floor);
 
 
 let vertex = [];
-//粒子效果
-var particleCount = 10000;
-var particles = new THREE.BufferGeometry();
-for (var p = 0; p < particleCount; p++) {
-  var particle = new THREE.Vector3(
-    Math.random() * 2 - 1,
-    Math.random() * 2 - 1,
-    Math.random() * 2 - 1
-  );
-  particle.normalize();
-  particle.multiplyScalar(200);
-  vertex.push(particle.x)
-  vertex.push(particle.y)
-  vertex.push(particle.z)
-  // particles.vertices.add(particle);
-}
-particles.setAttribute('position', new THREE.Float32BufferAttribute(vertex, 3))
-// console.log(particles)
+
 var particleMaterial = new THREE.PointsMaterial({
   color: 0xffffff,
-  size: 0.1,
+  size: 0.005,
   map: new THREE.TextureLoader().load(
     "https://threejs.org/examples/textures/sprites/disc.png"
   ),
   blending: THREE.AdditiveBlending,
   transparent: true,
-  sizeAttenuation:true,
-  depthTest:false,
+  sizeAttenuation: true,
+  depthTest: false,
   // vertexColors:true
 });
 
 
-// var particleSystem = new THREE.Points(particles, particleMaterial);
-// particleSystem.position.set(0, 0, 0);
-// scene.add(particleSystem);
 
-
-fbxloader = new FBXLoader();
+glbloader = new GLTFLoader();
 //创建一个数组用于存储顶点的位置
 let cakevertices = [];
 let cakeuv = [];
-fbxloader.load('./model/cake.fbx', (model) => {
+glbloader.load('./model/cake3.glb', (model) => {
   // model.scale.set(0.1,0.1,0.1)
-  cakevertices = combineBuffer(model, 'position')
-  cakeuv = combineBuffer(model, 'uv')
-  // scene.add(model)
-  const cakebuffer=new THREE.BufferGeometry().setAttribute('position',cakevertices);
-  let cakepoint=new THREE.Points(cakebuffer,particleMaterial)
-  cakepoint.scale.set(2,2,2)
-  cakepoint.rotateX(Math.PI/2*3)
+  console.log(model.scene)
+  cakevertices = combineBuffer(model.scene, 'position')
+  cakeuv = combineBuffer(model.scene, 'uv')
+  scene.add(model.scene)
+  let cakebuffer = new THREE.BufferGeometry()
+  cakebuffer.setAttribute('position', cakevertices)
+  cakebuffer.setAttribute('uv', cakeuv)
+  let cakepoint = new THREE.Points(cakebuffer, rawShaderMaterial)
+  cakepoint.scale.set(2, 2, 2)
+  // cakepoint.rotateX(Math.PI/2*3)
   scene.add(cakepoint)
 });
 
@@ -156,7 +136,7 @@ onMounted(() => {
   let animate = function () {
     const elapsedTime = clock1.getElapsedTime();
     //   console.log(elapsedTime);
-    rawShaderMaterial.uniforms.iTime.value = elapsedTime;
+    rawShaderMaterial.uniforms.uTime.value = elapsedTime;
     cameracontrols.update(clock.getDelta());
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
@@ -195,6 +175,7 @@ function combineBuffer(model, bufferName) {
     if (child.isMesh) {
 
       const buffer = child.geometry.attributes[bufferName];
+      console.log(buffer)
 
       count += buffer.array.length;
 
