@@ -103,7 +103,7 @@ glbloader.load('./model/cake3.glb', (model) => {
   console.log(model.scene)
   cakevertices = combineBuffer(model.scene, 'position')
   cakeuv = combineBuffer(model.scene, 'uv')
-  scene.add(model.scene)
+  // scene.add(model.scene)
   let cakebuffer = new THREE.BufferGeometry()
   cakebuffer.setAttribute('position', cakevertices)
   cakebuffer.setAttribute('uv', cakeuv)
@@ -144,6 +144,17 @@ onMounted(() => {
 
   animate();
   renderer.domElement.addEventListener("click", mouseClick, false);
+  // 页面缩放事件监听
+window.addEventListener('resize', () => {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  // 更新渲染
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  // 更新相机
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+});
 });
 function mouseClick(e) {
   e.preventDefault();
@@ -155,17 +166,18 @@ function mouseClick(e) {
   const intersects = raycaster.intersectObjects(scene.children);
   console.log(intersects);
 }
-window.addEventListener("resize", () => {
-  let sizes = new Object();
-  sizes.width = width;
-  sizes.height = height;
-  // 更新渲染
-  renderer.setSize(width, height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  // 更新相机
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-});
+// window.addEventListener("resize", () => {
+//   let sizes = new Object();
+//   sizes.width = width;
+//   sizes.height = height;
+//   // 更新渲染
+//   renderer.setSize(width, height);
+//   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+//   // 更新相机
+//   camera.aspect = width / height;
+//   camera.updateProjectionMatrix();
+// });
+
 function combineBuffer(model, bufferName) {
 
   let count = 0;
