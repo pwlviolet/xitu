@@ -18,6 +18,7 @@ import * as dat from "dat.gui";
 import basicVertexShader from "./shader/raw/vertexpoint.glsl?raw";
 // // 片元着色器
 import basicFragmentShader from "./shader/raw/fragmentpoint.glsl?raw";
+import * as Mathmatrix from'./util/math'
 import CameraControls from "camera-controls";
 CameraControls.install({ THREE: THREE });
 //全局
@@ -63,9 +64,17 @@ const rawShaderMaterial = new THREE.RawShaderMaterial(
       uTime: {
         value: 10.0,
       },
+      uMatrix:{
+        value:Mathmatrix.getModelViewMatrix()
+      },
+      uPro:{
+        value:Mathmatrix.getProjectionMatrix()
+      }
     },
   }
 )
+console.log(Mathmatrix.getModelViewMatrix())
+console.log(Mathmatrix.getProjectionMatrix())
 // 创建平面
 const floor = new THREE.Mesh(
   new THREE.PlaneBufferGeometry(1, 1, 32, 32),
@@ -108,7 +117,7 @@ glbloader.load('./model/cake3.glb', (model) => {
   cakebuffer.setAttribute('position', cakevertices)
   cakebuffer.setAttribute('uv', cakeuv)
   let cakepoint = new THREE.Points(cakebuffer, rawShaderMaterial)
-  cakepoint.scale.set(2, 2, 2)
+  cakepoint.scale.set(10, 10, 10)
   // cakepoint.rotateX(Math.PI/2*3)
   scene.add(cakepoint)
 });

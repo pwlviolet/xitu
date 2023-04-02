@@ -5,6 +5,7 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 uniform float uTime;
+uniform mat4 uMatrix;
 varying vec2 vUv;
 
 // float random (vec3 st) {
