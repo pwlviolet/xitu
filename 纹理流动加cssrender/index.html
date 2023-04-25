@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Vue</title>
+  </head>
+  <body>
+    <div id="app">
+    </div>
+    <div id="test">
+      </div>
+    <script type="module" src="/src/main.js"></script>
+    <script id="vertexShader" type="x-shader/x-vertex">
+      varying vec3 vNormal;
+      varying vec3 vPositionNormal;
+      void main() 
+      {
+        vNormal = normalize( normalMatrix * normal ); // 转换到视图空间
+        vPositionNormal = normalize(( modelViewMatrix * vec4(position, 1.0) ).xyz);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      }
+    </script>
+    <!-- fragment shader a.k.a. pixel shader -->
+    <script id="fragmentShader" type="x-shader/x-vertex"> 
+      uniform vec3 glowColor;
+      uniform float b;
+      uniform float p;
+      uniform float s;
+      varying vec3 vNormal;
+      varying vec3 vPositionNormal;
+      void main() 
+      {
+        float a = pow( b + s * abs(dot(vNormal, vPositionNormal)), p );
+        gl_FragColor = vec4( glowColor, a );
+      }
+    </script>
+  </body>
+</html>
