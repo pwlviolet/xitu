@@ -83,7 +83,7 @@ scene.add(cube)
 let mesh
 let helper = new MMDAnimationHelper();
 // Instantiate a loader
-const modelFile = './model/嘉然/JiaRan.pmx';
+const modelFile = './model/星穹铁道—克拉拉/星穹铁道—克拉拉/克拉拉.pmx';
 const vmdFiles = [ './model/《我们快出发》MMD动作数据.vmd' ];
 const cameraFiles = [ 'model/wavefile_camera.vmd' ];
 const audioFile = 'models/wavefile_short.mp3';
