@@ -77,14 +77,14 @@ render3d.render(scene, camera)
   scene.add(objcss3d)
 let mesh
 // Instantiate a loader
-const modelFile = './model/miku_v2.pmd';
-const vmdFiles = [ './model/《我们快出发》MMD动作数据.vmd' ];
-const loader = new MMDLoader();
-				loader.loadWithAnimation( modelFile, vmdFiles, function ( mmd ) {
+// const modelFile = './model/miku_v2.pmd';
+// const vmdFiles = [ './model/《我们快出发》MMD动作数据.vmd' ];
+// const loader = new MMDLoader();
+// 				loader.loadWithAnimation( modelFile, vmdFiles, function ( mmd ) {
 
-					mesh = mmd.mesh;
-					mesh.position.y = - 10;
-					scene.add( mesh );})
+// 					mesh = mmd.mesh;
+// 					mesh.position.y = - 10;
+// 					scene.add( mesh );})
 // Load a MMD model
 // loader.load(
 // 	// path to PMD/PMX file
