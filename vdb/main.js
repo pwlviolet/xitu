@@ -37,6 +37,30 @@ new OpenVDB.VDBLoader().load('./model/dragon.vdb', function (vdb) {
 
   scene.add(fogVolume);
 });
+const lights = {
+  useAmbientLights: 0b100000, // 1
+  usePointLights: 0b010000, // 2
+  useDirectionalLights: 0b001000, // 4
+  useSpotLights: 0b000100, // 8
+  useHemisphereLights: 0b000010, // 16
+  useEnvironment: 0b000001, // 32
+};
+scene.background = new THREE.Color(0x598eff);
+const fogVolume = new OpenVDB.FogVolume(new OpenVDB.CloudVolume({
+  height: 0.2,
+  density: 0.3
+}), {
+  resolution: 100,
+  progressive: true,
+  steps: 100,
+  absorbance: 1.,
+  baseColor: 0x000000,
+  lights: lights.useEnvironment | lights.useDirectionalLights,
+  densityCutoff: 0.,
+});
+fogVolume.scale.setScalar(1000.0);
+fogVolume.position.y += 300.0;
+scene.add(fogVolume);
 // scene.add(box);
 const light=new THREE.AmbientLight(0xffffff,10)
 scene.add(light)
