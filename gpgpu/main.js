@@ -1,3 +1,9 @@
+/*
+* @Description: 
+* @Author: WL_P
+* @Date: 2024-01-10
+* @LastEditTime: 2024-01-10
+*/
 import './style.css';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
@@ -34,6 +40,16 @@ const texel = 1000
 const gpgpu = new GPUComputationRenderer(texel,texel, renderer)
 const texture= gpgpu.createTexture()
 console.log(texture)
+const data = texture.image.data
+console.log(data)
+
+for (let i = 0; i < data.length/4; i++) {
+    data[i * 4 + 0] = THREE.MathUtils.randFloatSpread(256)
+    data[i * 4 + 1] = THREE.MathUtils.randFloatSpread(256)
+    data[i * 4 + 2] = THREE.MathUtils.randFloatSpread(256)
+    data[i * 4 + 3] = 1
+}
+console.log(data,data.length)
 
 
 
