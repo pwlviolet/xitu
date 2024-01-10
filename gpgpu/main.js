@@ -50,11 +50,24 @@ for (let i = 0; i < data.length/4; i++) {
     data[i * 4 + 3] = 1
 }
 console.log(data,data.length)
-
-
+const computeshader=`
+uniform sampler2D texturePosition;
+void main(){
+    vec2 uv=gl_FragCoord.xy/resolution.xy;
+    vec3 pos=texture(texturePosition,uv).xyz;
+    gl_FragColor=vec4(pos,1.);
+}
+`
+let positionVariable = gpgpu.addVariable('texturePosition', computeshader, texture)
+// gpgpu.setVariableDependencies(positionVariable)
+// console.log(positionVariable)
+gpgpu.init()
 
 
 let animate = function () {
+  gpgpu.compute()
+ const result= gpgpu.getCurrentRenderTarget(positionVariable).texture
+ box.material.map=result
   requestAnimationFrame(animate);
   cameracontrols.update(clock.getDelta());
   renderer.render(scene, camera);
