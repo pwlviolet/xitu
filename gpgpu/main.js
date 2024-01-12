@@ -83,7 +83,7 @@ const width = canvas.clientWidth;
 const height = canvas.clientHeight;
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100000);
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
 });
@@ -91,13 +91,13 @@ camera.position.set(0, 0, 10);
 renderer.setSize(width, height);
 canvas.appendChild(renderer.domElement);
 renderer.render(scene, camera);
-const box = new THREE.Mesh(
-  new THREE.BoxGeometry(),
-  new THREE.MeshBasicMaterial({
-    color: 0xffff00,
-  })
-);
-scene.add(box);
+// const box = new THREE.Mesh(
+//   new THREE.BoxGeometry(),
+//   new THREE.MeshBasicMaterial({
+//     color: 0xffff00,
+//   })
+// );
+// scene.add(box);
 cameracontrols = new CameraControls(camera, renderer.domElement);
 //gpgpu
 
@@ -133,32 +133,40 @@ if (error !== null) {
 }
 gpgpu.compute()
 const result = gpgpu.getCurrentRenderTarget(positionVariable).texture
-box.material.map = result
+// box.material.map = result
 //创建一个粒子geo
 const pointsGeo = new THREE.BufferGeometry()
 const positions = new Float32Array(texel * texel * 3)
 const datauv = new Float32Array(texel * texel * 2)
-for (let i = 0; i < width; i++) {
-  for (let j = 0; j < width; j++) {
-    const index = i + j * width
-    positions[index * 3 + 0] = (Math.random()*2-1) * 100
-    positions[index * 3 + 1] = (Math.random()*2-1) * 100
-    positions[index * 3 + 2] = (Math.random()*2-1) * 100
-    datauv[index * 2 + 0] = i / width
-    datauv[index * 2 + 1] = j / width
+for (let i = 0; i < texel; i++) {
+  for (let j = 0; j < texel; j++) {
+    const index = i + j * texel
+    positions[index * 3 + 0] = (Math.random() * 2 - 1) * 100
+    positions[index * 3 + 1] = (Math.random() * 2 - 1) * 100
+    positions[index * 3 + 2] = (Math.random() * 2 - 1) * 100
+    datauv[index * 2 + 0] = i / texel
+    datauv[index * 2 + 1] = j / texel
   }
 }
 pointsGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3))
 pointsGeo.setAttribute("datauv", new THREE.BufferAttribute(datauv, 2))
 
-const pointsystem = new THREE.Mesh(pointsGeo, new THREE.ShaderMaterial({
+const pointsystem = new THREE.Points(pointsGeo, new THREE.ShaderMaterial({
   vertexShader: `
   attribute vec2 datauv;
   uniform sampler2D datatexture;
-  
+  uniform float uTime;
   void main(){
   vec3 p=texture(datatexture,datauv).xyz;
-  gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
+  // vec3 dis =p-position;
+  // vec3 pos=position+dis*abs(sin(uTime));
+  vec4 worldposition=modelMatrix*vec4(position,1.);
+  vec4 woldtexturep=modelMatrix*vec4(p,1.);
+  vec3 dis=woldtexturep.xyz-worldposition.xyz;
+  vec4 curposition=worldposition+vec4(dis*abs(sin(uTime)),1.0);
+  // vec4 curPosition=vec4(vec3(worldposition.xyz+woldtexturep.xyz),1.0);
+  gl_Position=projectionMatrix*viewMatrix*curposition;
+  gl_PointSize=1.0;
 }
   
   `,
@@ -172,13 +180,20 @@ const pointsystem = new THREE.Mesh(pointsGeo, new THREE.ShaderMaterial({
   uniforms: {
     datatexture: {
       value: gpgpu.getCurrentRenderTarget(positionVariable).texture
+    },
+    uTime:{
+      value:0.0
     }
-  }
+  },
+  // side: 2,
+  // transparent: true,
+  // blending: THREE.AdditiveBlending,
+  // depthWrite: false,
 })
 )
 scene.add(pointsystem)
 let animate = function () {
-
+  pointsystem.material.uniforms.uTime.value+=0.001
   requestAnimationFrame(animate);
   cameracontrols.update(clock.getDelta());
   renderer.render(scene, camera);
