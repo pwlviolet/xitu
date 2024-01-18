@@ -68,16 +68,16 @@ const shaderpass = new ShaderPass(
         return length(p)-r;
     }      
 		void main() {
-      vec2 p = (2.0*vUv-iResolution.xy)/iResolution.y;;
-      vec2 texelSize = vec2( 1.0/ iResolution.x, 1.0/ iResolution.y );
-      float d = sdCircle(p,0.5);
+      // vec2 p = (2.0*vUv-iResolution.xy)/iResolution.y;;
+      // vec2 texelSize = vec2( 1.0/ iResolution.x, 1.0/ iResolution.y );
+      // float d = sdCircle(p,0.5);
 
-      // coloring
-      vec3 col = (d>0.0) ? vec3(0.9,0.6,0.3) : vec3(0.65,0.85,1.0);
-      col *= 1.0 - exp(-6.0*abs(d));
-      col *= 0.8 + 0.2*cos(150.0*d);
-      col = mix( col, vec3(1.0), 1.0-smoothstep(0.0,0.01,abs(d)) );
-			gl_FragColor = vec4(vec3(col), 1.0);
+      // // coloring
+      // vec3 col = (d>0.0) ? vec3(0.9,0.6,0.3) : vec3(0.65,0.85,1.0);
+      // col *= 1.0 - exp(-6.0*abs(d));
+      // col *= 0.8 + 0.2*cos(150.0*d);
+      // col = mix( col, vec3(1.0), 1.0-smoothstep(0.0,0.01,abs(d)) );
+			gl_FragColor = vec4(vec3(1.0), 1.0);
 		}
     `,
   })
