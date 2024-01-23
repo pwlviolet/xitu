@@ -70,7 +70,7 @@ const shaderpass = new ShaderPass(
     
     float sdSphere( vec3 p, float s )
     {
-        return length(p-vec3(0,0,0))-s;
+        return length(p-vec3(0,0,1))-s;
     }
     // https://iquilezles.org/articles/normalsSDF/
     vec3 getNormal(vec3 p,float s)
@@ -86,7 +86,7 @@ const shaderpass = new ShaderPass(
       uv-=0.5;
       uv.x*=iResolution.x/iResolution.y;
       //定义射线 ray:o+dr;
-      vec3 dir=normalize(vec3(uv,1.)),o=vec3(0.0,0.0,-0.4);
+      vec3 dir=normalize(vec3(uv,1.)),o=vec3(0.0,0.0,0.0);
       float d=0.;
         vec3 col;
         for(float i=0.;i<10.;i++)
@@ -96,7 +96,13 @@ const shaderpass = new ShaderPass(
             if(sdf<EPS)//如果小于阈值就跳出
                 break;
         }
-        col=vec3(0.0,0.0,1.0);
+        //获取法线和光
+        vec3 n=getNormal(o+d*dir,0.2),lightdir=normalize(vec3(0.,0.,1.0));
+        vec3 lightcolor=vec3(1.0,0.0,0.0);
+        vec3 diffuse=0.5*lightcolor*pow(max(0.,dot(n,-lightdir)),1.);//漫反射
+        vec3 ambient=vec3(1.0,1.0,1.0)*.5;//环境
+        // col=vec3(0.0,0.0,1.0);
+        col=diffuse+ambient;
         if(d>2.0)
         {
           gl_FragColor = vec4(0.0,0.0,0.0,1.0);
