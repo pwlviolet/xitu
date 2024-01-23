@@ -60,26 +60,53 @@ const shaderpass = new ShaderPass(
 
 		}`,
     fragmentShader: `
+    #define EPS 1e-5
 		varying vec2 vUv;
     uniform vec2 iResolution;
-    float sdCircle( in vec2 p, in float r ) 
-    {
-        return length(p)-r;
-    }
+    // float sdCircle( in vec2 p, in float r ) 
+    // {
+    //     return length(p)-r;
+    // }
     
     float sdSphere( vec3 p, float s )
     {
-        return length(p)-s;
+        return length(p-vec3(0,0,0))-s;
+    }
+    // https://iquilezles.org/articles/normalsSDF/
+    vec3 getNormal(vec3 p,float s)
+    {
+    vec2 e=vec2(0,EPS);
+    float c=sdSphere(p,s);
+    return normalize(vec3(sdSphere(p+e.yxx,s)-c,
+                          sdSphere(p+e.xyx,s)-c,
+                          sdSphere(p+e.xxy,s)-c));//求三个方向的偏导然后归一化
     }      
 		void main() {
       vec2 uv = vUv;
       uv-=0.5;
       uv.x*=iResolution.x/iResolution.y;
-      vec3 col=vec3(0.0);
-      float d= uv.x*uv.x+uv.y*uv.y-0.16;
-      float c= step(d,0.0);
-      col = mix(col,vec3(0.0,0.0,1.0),c);
-			gl_FragColor = vec4(col, 1.0);
+      //定义射线 ray:o+dr;
+      vec3 dir=normalize(vec3(uv,1.)),o=vec3(0.0,0.0,-0.4);
+      float d=0.;
+        vec3 col;
+        for(float i=0.;i<10.;i++)
+        {
+          float sdf=sdSphere(o+d*dir,0.1);
+            d+=sdf;
+            if(sdf<EPS)//如果小于阈值就跳出
+                break;
+        }
+        col=vec3(0.0,0.0,1.0);
+        if(d>2.0)
+        {
+          gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+        }
+        else{
+          gl_FragColor = vec4(vec3(col),1.0);
+        }
+
+
+
 		}
     `,
   })
