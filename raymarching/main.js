@@ -99,7 +99,7 @@ const shaderpass = new ShaderPass(
         //获取法线和光
         vec3 n=getNormal(o+d*dir,0.2),lightdir=normalize(vec3(0.,0.,1.0));
         vec3 lightcolor=vec3(1.0,0.0,0.0);
-        vec3 diffuse=0.5*lightcolor*pow(max(0.,dot(n,-lightdir)),1.);//漫反射
+        vec3 diffuse=1.0*lightcolor*pow(max(0.,dot(n,-lightdir)),1.);//漫反射
         vec3 ambient=vec3(1.0,1.0,1.0)*.5;//环境
         // col=vec3(0.0,0.0,1.0);
         col=diffuse+ambient;
