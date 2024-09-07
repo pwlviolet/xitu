@@ -1,0 +1,20 @@
+{
+  "name": "vite-starter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "camera-controls": "^2.7.3",
+    "gsap": "^3.12.4",
+    "openvdb": "^0.3.0",
+    "three": "^0.153.0"
+  }
+}
