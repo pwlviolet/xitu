@@ -73,8 +73,39 @@ scene.add(box);
 box.position.set(0, 0, -100);
 const stencilplane = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
-  new THREE.MeshBasicMaterial({
-    color: 0xffff00,
+  new THREE.RawShaderMaterial({
+    vertexShader: `
+    precision mediump float;
+    attribute vec3 position;
+    attribute vec3 pos2;
+    attribute vec2 uv;
+
+    uniform mat4 modelMatrix;
+    uniform mat4 viewMatrix;
+    uniform mat4 projectionMatrix;
+
+    // 获取时间
+    uniform float uTime;
+    varying float size;
+    varying vec2 vUv;
+    // highp  -2^16 - 2^16
+    // mediump -2^10 - 2^10
+    // lowp -2^8 - 2^8
+
+    void main()
+    {
+        vUv=uv;
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix* vec4(position,1.0) ;
+    }`,
+    fragmentShader: `
+    precision mediump float;
+
+    void main()
+    {
+        vec2 screenCoord = gl_FragCoord.xy;
+        gl_FragColor=vec4(screenCoord.x,0.0,0.0,1.0);
+    }`,
+    // color: 0xffff00,
     stencilWrite: true,
     stencilRef: 1,
     stencilFunc: THREE.AlwaysStencilFunc,
@@ -89,6 +120,22 @@ stencilplane.renderOrder = -1;
 scene.add(stencilplane);
 cameracontrols = new CameraControls(camera, renderer.domElement);
 
+const transparentobj=new THREE.Mesh(new THREE.BoxGeometry(2,2,2),new THREE.MeshBasicMaterial({
+  transparent:true,
+  opacity:0.1,
+  color:0x00ff00
+}))
+scene.add(transparentobj)
+// transparentobj.position.set(0,0,1)
+const realobj=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({
+  transparent:true,
+  opacity:0.5,
+  color:0xffff00,
+  depthTest:false
+}))
+scene.add(realobj)
+// realobj.renderOrder=-1
+console.log(transparentobj.renderOrder)
 // console.log(box);
 
 let animate = function () {
