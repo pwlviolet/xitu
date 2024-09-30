@@ -110,8 +110,8 @@ const sphere = new THREE.Mesh(
     void main() {
       // vNormal = normalize(normalMatrix * normal);
       vec4 normalworld=inverse_mat4(transpose(modelMatrix))*vec4(normal,1.);
-      // vNormal=normalworld.xyz;
-      vNormal=normal;
+      vNormal=normalworld.xyz;
+      // vNormal=normal;
       vWorldPosition = (modelMatrix * vec4(position, 1.)).xyz;
       gl_Position = projectionMatrix * viewMatrix * vec4(vWorldPosition, 1.);
     }
@@ -165,6 +165,8 @@ const sphere = new THREE.Mesh(
   })
 );
 scene.add(sphere);
+sphere.rotateY(Math.PI/2);
+
 
 
 let animate = function () {
