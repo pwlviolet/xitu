@@ -40,6 +40,7 @@ let clearPass = new ClearPass();
 let composer = new EffectComposer(renderer);
 let iResolution = new THREE.Vector2(width, height);
 blackholeshader.uniforms.iResolution.value=iResolution
+blackholeshader.uniforms.U_Time.value += 5;
 const shaderpass = new ShaderPass(blackholeshader);
 composer.addPass(new RenderPass(scene, camera));
 composer.addPass(clearPass);
@@ -47,6 +48,9 @@ composer.addPass(shaderpass);
 composer.addPass(new OutputPass());
 
 let animate = function () {
+
+  // box.rotation.x += 0.01;
+  // box.rotation.y += 0.01;
   requestAnimationFrame(animate);
   cameracontrols.update(clock.getDelta());
 
@@ -57,6 +61,7 @@ let animate = function () {
 animate();
 
 window.addEventListener('resize', () => {
+  
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   composer.setSize(window.innerWidth, window.innerHeight);

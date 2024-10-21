@@ -15,6 +15,7 @@ const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
 });
+console.log(renderer.info)
 camera.position.set(0, 0, 40);
 renderer.setSize(width, height);
 canvas.appendChild(renderer.domElement);
@@ -28,12 +29,18 @@ const sphere = new THREE.Mesh(
   })
 );
 scene.add(sphere);
-
+// scene.add(new THREE.Mesh(
+//   new THREE.SphereGeometry(10,10,100),
+//   new THREE.MeshBasicMaterial({
+//     color: 0xffff00,
+//   })
+// ))
 const sampler=new MeshSurfaceSampler(sphere)
 .build();
 const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(),new THREE.MeshBasicMaterial({
   color:0xff0000
 }),10);
+console.log(mesh)
 const position = new THREE.Vector3();
 const matrix = new THREE.Matrix4();
 for ( let i = 0; i < 10; i ++ ) {
